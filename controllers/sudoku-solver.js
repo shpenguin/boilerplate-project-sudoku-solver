@@ -144,9 +144,8 @@ class SudokuSolver {
     let count = 0;
 
     for (let i = 0; i < 81; i++) {
-      let char = strArr[i];
 
-      if (char === '.') {
+      if (strArr[i] === '.') {
         let row = Math.trunc(i / 9) * 9;
         let col = i % 9;
         let Arr = strArr.slice(row, row + 9);
@@ -175,7 +174,7 @@ class SudokuSolver {
         });
 
         if (sumArr.length === 8) {
-          strArr[i] = sumArr.reduce((sum, cur) => sum - cur, 45);
+          strArr[i] = '' + sumArr.reduce((sum, cur) => sum - cur, 45);
           count++;
         }
 
@@ -183,12 +182,15 @@ class SudokuSolver {
 
     }
 
-    if (count === 0 && strArr.includes('.')) {
-      return { error: 'Puzzle cannot be solved' };
+    if (!strArr.includes('.')) {
+      return strArr.join('');
     }
-    
-    return (strArr.includes('.')) ? this.solve(strArr) : strArr.join('');
 
+    if (count !== 0) {
+      return this.solve(strArr);
+    } 
+
+    return { error: 'Puzzle cannot be solved' };
   }
 }
 
