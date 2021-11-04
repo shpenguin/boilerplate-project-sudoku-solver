@@ -12,9 +12,9 @@ module.exports = function (app) {
       let coord = coordinate.toUpperCase();
       const clash = [];
 
-      if (!puzzle || !coord || !value) {
+      if (puzzle === undefined || coord === undefined || value === undefined ) {
         return res.json({
-          error: 'Required field(s) missing'
+          error: "Required field(s) missing"
         });
       }
 
