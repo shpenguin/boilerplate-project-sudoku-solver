@@ -1,5 +1,20 @@
 class SudokuSolver {
 
+  constructor() {
+    this.rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
+    this.regions = [
+      [0, 1, 2, 9, 10, 11, 18, 19, 20],
+      [3, 4, 5, 12, 13, 14, 21, 22, 23],
+      [6, 7, 8, 15, 16, 17, 24, 25, 26],
+      [27, 28, 29, 36, 37, 38, 45, 46, 47],
+      [30, 31, 32, 39, 40, 41, 48, 49, 50],
+      [33, 34, 35, 42, 43, 44, 51, 52, 53],
+      [54, 55, 56, 63, 64, 65, 72, 73, 74],
+      [57, 58, 59, 66, 67, 68, 75, 76, 77],
+      [60, 61, 62, 69, 70, 71, 78, 79, 80]
+    ];
+  }
+
   validate(puzzleString) {
 
     if (/[^1-9||.]/.test(puzzleString)) {
@@ -14,7 +29,7 @@ class SudokuSolver {
   }
 
   convertCoord(coord) {
-    const puzzleArr = [
+    /*const puzzleArr = [
       "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9",
       "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9",
       "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9",
@@ -27,20 +42,11 @@ class SudokuSolver {
     ];
 
     return puzzleArr.indexOf(coord);
-  }
-
-  handleRegions() {
-    return [
-      [0, 1, 2, 9, 10, 11, 18, 19, 20],
-      [3, 4, 5, 12, 13, 14, 21, 22, 23],
-      [6, 7, 8, 15, 16, 17, 24, 25, 26],
-      [27, 28, 29, 36, 37, 38, 45, 46, 47],
-      [30, 31, 32, 39, 40, 41, 48, 49, 50],
-      [33, 34, 35, 42, 43, 44, 51, 52, 53],
-      [54, 55, 56, 63, 64, 65, 72, 73, 74],
-      [57, 58, 59, 66, 67, 68, 75, 76, 77],
-      [60, 61, 62, 69, 70, 71, 78, 79, 80]
-    ];
+    const rows = this.rows;*/
+    let [row, col] = [...coord];
+    row = this.rows.indexOf(row) * 9;
+    col = col - 1;
+    return row + col;
   }
 
   checkKnownPlacement(puzzleString, coord, value) {
@@ -63,9 +69,9 @@ class SudokuSolver {
 
     const rowArr = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I'];
     let row = rowArr.indexOf(coord[0].toUpperCase());*/
-    let row = Math.trunc(this.convertCoord(coord) / 9);
-    let idx = row * 9;
-    //let col = coord[1] - 1;
+    //let row = Math.trunc(this.convertCoord(coord) / 9);
+    //let idx = row * 9;
+    let idx = this.rows.indexOf(coord[0]) * 9;
     const subStr = puzzleString.slice(idx, idx + 9);
 
     /*if (oddArr[col] === value) {
@@ -84,7 +90,7 @@ class SudokuSolver {
                     .filter(v => v[1] === coord[1])
                     .map(v => map[v]);*/
 
-    let col = this.convertCoord(coord) % 9;
+    let col = coord[1] - 1;
 
     for (let i = 0; i < 9; i++) {
       let idx = i * 9 + col;
@@ -124,23 +130,40 @@ class SudokuSolver {
 
     const rowArr = [A, B, C, D, E, F, G, H, I];
     let row = rowArr.indexOf(coord[0].toUpperCase());
-    let col = coord[1] - 1;*/
+    let col = coord[1] - 1;
     let idx = this.convertCoord(coord);
-    const regions = this.handleRegions();
+    const regions = this.regions;*/
+    let [row, col] = [...coord];
+    col = Math.trunc((col - 1) / 3);
 
-    for (let item of regions) {
+    if (row > 'F') {
+      row = 6;
+    } else if (row > 'C') {
+      row = 3;
+    } else {
+      row = 0;
+    }
+
+    //console.log(`region_Id is ${row + col}`);
+
+    //let item = regions[row + col].map(v => puzzleString[v]);
+    return !this.regions[row + col]
+      .map(v => puzzleString[v])
+      .includes(value);
+
+    /*for (let item of regions) {
       if (item.includes(idx)) {
         return !item
           .map(v => puzzleString[v])
           .includes(value);
       }
-    }
+    }*/
 
   }
 
   solve(puzzleArray) {
     const strArr = puzzleArray;
-    const regions = this.handleRegions();
+    const regions = this.regions;
     let count = 0;
 
     for (let i = 0; i < 81; i++) {
@@ -155,19 +178,18 @@ class SudokuSolver {
           Arr.push(strArr[idx]);
         }
 
-        /*strArr.forEach((item, j) => {
-          if ((j - col) % 9 === 0) {
-            colArr.push(item);
-          }
-        });*/
-
-        for (let item of regions) {
+        /*for (let item of regions) {
           if (item.includes(i)) {
             let region = item.map(v => strArr[v]);
             Arr = Arr.concat(region);
             break;
           }
-        }
+        }*/
+        
+        let hor = Math.trunc(row / 27) * 3;
+        let ver = Math.trunc(col / 3);
+        let region = this.regions[hor + ver];
+        Arr = Arr.concat(region.map(v => strArr[v]));
 
         let sumArr = Arr.filter((val, k, self) => {
           return self.indexOf(val) === k && val !== '.';
@@ -183,12 +205,12 @@ class SudokuSolver {
     }
 
     if (!strArr.includes('.')) {
-      return strArr.join('');
+      return { solution: strArr.join('') };
     }
 
     if (count !== 0) {
       return this.solve(strArr);
-    } 
+    }
 
     return { error: 'Puzzle cannot be solved' };
   }

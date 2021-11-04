@@ -83,6 +83,6 @@ module.exports = function (app) {
       }
 
       //let str_array = puzzle.split('');
-      return solver.solve(puzzle.split(''));
+      return res.json(solver.solve(puzzle.split('')));
     });
 };
